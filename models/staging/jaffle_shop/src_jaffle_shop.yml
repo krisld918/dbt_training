@@ -1,0 +1,35 @@
+version: 2
+
+sources:
+  - name: dbt_training_jaffle_shop
+    description: A clone of a Postgres application database.
+    database: galileo
+    tables:
+      - name: customers
+        description: Raw customers data.
+        columns:
+          - name: id
+            description: Primary key for customers
+            tests:
+              - unique
+              - not_null
+      - name: orders
+        loaded_at_field: _fivetran_synced
+        freshness:
+          warn_after: {count: 1, period: day}
+          error_after: {count: 7, period: day}
+        description: Raw orders data.
+        columns:
+          - name: id
+            description: Primary key for orders
+            tests:
+              - unique
+              - not_null
+  - name: dbt_training_stripe
+    database: galileo
+    tables:
+      - name: payments
+        loaded_at_field: _fivetran_synced
+        freshness:
+          warn_after: { count: 1, period: day }
+          error_after: { count: 7, period: day }
