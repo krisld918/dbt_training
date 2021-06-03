@@ -6,7 +6,7 @@ with payments as (
         status,
         amount/100 as amount,
         created as created_at
-    from dbt_training_stripe.payments
+    from {{ source('dbt_training_stripe','payments') }}
 )
 
 select * from payments

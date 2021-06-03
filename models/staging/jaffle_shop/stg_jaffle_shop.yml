@@ -2,14 +2,71 @@ version: 2
 
 models:
   - name: stg_customers
+    description: One unique customer per row
     columns:
       - name: customer_id
+        description: Primary key for stg_customers
         tests:
           - unique
           - not_null
+      - name: first_name
+        description: First name of customer
+      - name: last_name
+        description: Last name of customer
+
   - name: stg_orders
+    description: One unique order per row
     columns:
+      - name: order_id
+        description: Primary key for stg_orders
+        tests:
+          - unique
+          - not_null
+      - name: customer_id
+        description: Foreign key to stg_customers.customer_id
+        tests:
+          - relationships:
+              to: ref('stg_customers')
+              field: customer_id
+      - name: status
+        description: "{{ doc('order_status') }}"
+        tests:
+          - accepted_values:
+              values:
+                - returned
+                - completed
+                - shipped
+                - placed
+                - return_pending
+      - name: order_date
+        description: Date order was placed
+
+  - name: stg_payments
+    description: One unique payment method per row
+    columns:
+      - name: payment_id
+        description: Primary key for stg_payments
+        tests:
+          - unique
+          - not_null
+      - name: order_id
+        description: Foreign key to stg_orders.order_id
+        tests:
+          - relationships:
+              to: ref('stg_orders')
+              field: order_id
+      - name: payment_method
+        description: "{{ doc('payment_method') }}"
+        tests:
+          - accepted_values:
+              values:
+                - bank_transfer
+                - credit_card
+                - coupon
+                - gift_card
       - name: status
         tests:
           - accepted_values:
-              values: ['returned','completed','shipped','placed','return_pending']
+              values:
+                - fail
+                - success
